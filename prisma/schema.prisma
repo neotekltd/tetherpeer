@@ -13,3 +13,126 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  BANNED
+}
+
+enum TradeStatus {
+  CREATED
+  ESCROW_FUNDED
+  PAYMENT_PENDING
+  PAYMENT_SENT
+  PAYMENT_CONFIRMED
+  COMPLETED
+  DISPUTED
+  REFUNDED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  FLOUCI
+  D17
+}
+
+enum Network {
+  TRC20
+  ERC20
+  POLYGON
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  phone         String?   @unique
+  rating        Float     @default(3.0)
+  status        UserStatus @default(ACTIVE)
+  tradeLimit    Float     @default(500) // Daily trade limit in TND
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  lastLoginAt   DateTime?
+  deviceHash    String?   // For basic fraud prevention
+  publicKey     String?   // User's public key for multisig
+  buyTrades     Trade[]   @relation("BuyerTrades")
+  sellTrades    Trade[]   @relation("SellerTrades")
+  ratings       Rating[]  @relation("UserRatings")
+  givenRatings  Rating[]  @relation("RaterRatings")
+  disputes      Dispute[] @relation("UserDisputes")
+  
+  @@index([email])
+  @@index([phone])
+}
+
+model Trade {
+  id              String      @id @default(uuid())
+  escrowAddress   String      // 2-of-3 multisig P2SH address
+  network         Network     // USDT network (TRC20/ERC20/Polygon)
+  amount          Float       // USDT amount
+  priceInTND      Float      // Price per USDT in TND
+  totalTND        Float      // Total amount in TND
+  seller          User        @relation("SellerTrades", fields: [sellerId], references: [id])
+  sellerId        String
+  buyer           User?       @relation("BuyerTrades", fields: [buyerId], references: [id])
+  buyerId         String?
+  status          TradeStatus @default(CREATED)
+  paymentMethod   PaymentMethod
+  paymentProof    String?     // Encrypted payment proof hash
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  expiresAt       DateTime    // Auto-refund timeout
+  dispute         Dispute?
+  rating          Rating?
+  
+  @@index([sellerId])
+  @@index([buyerId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Rating {
+  id          String    @id @default(uuid())
+  trade       Trade     @relation(fields: [tradeId], references: [id])
+  tradeId     String    @unique
+  user        User      @relation("UserRatings", fields: [userId], references: [id])
+  userId      String
+  rater       User      @relation("RaterRatings", fields: [raterId], references: [id])
+  raterId     String
+  score       Int       @default(3) // 1-5 stars
+  comment     String?
+  createdAt   DateTime  @default(now())
+  
+  @@index([userId])
+  @@index([raterId])
+}
+
+model Dispute {
+  id          String    @id @default(uuid())
+  trade       Trade     @relation(fields: [tradeId], references: [id])
+  tradeId     String    @unique
+  user        User      @relation("UserDisputes", fields: [userId], references: [id])
+  userId      String
+  reason      String
+  evidence    String?   // Encrypted evidence hash
+  resolution  String?
+  status      String    @default("OPEN") // OPEN, RESOLVED, CLOSED
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  @@index([userId])
+  @@index([status])
+}
+
+// For encrypted chat messages
+model Message {
+  id          String    @id @default(uuid())
+  tradeId     String
+  senderId    String
+  content     String    // E2E encrypted content
+  createdAt   DateTime  @default(now())
+  
+  @@index([tradeId])
+  @@index([senderId])
+  @@index([createdAt])
+}

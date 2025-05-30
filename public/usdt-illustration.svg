@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="600" viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="400" cy="300" r="250" fill="#E8F4FF"/>
+  
+  <!-- USDT Coin -->
+  <circle cx="400" cy="300" r="150" fill="#26A17B"/>
+  <circle cx="400" cy="300" r="140" fill="#FFFFFF"/>
+  <circle cx="400" cy="300" r="130" fill="#26A17B"/>
+  
+  <!-- T Symbol -->
+  <path d="M400 220V380" stroke="white" stroke-width="20" stroke-linecap="round"/>
+  <path d="M320 240H480" stroke="white" stroke-width="20" stroke-linecap="round"/>
+  
+  <!-- Decorative Elements -->
+  <circle cx="250" cy="200" r="30" fill="#2563EB" fill-opacity="0.2"/>
+  <circle cx="550" cy="400" r="40" fill="#2563EB" fill-opacity="0.2"/>
+  <circle cx="200" cy="450" r="25" fill="#2563EB" fill-opacity="0.2"/>
+  <circle cx="600" cy="250" r="35" fill="#2563EB" fill-opacity="0.2"/>
+  
+  <!-- Currency Symbols -->
+  <text x="150" y="300" font-family="Arial" font-size="24" fill="#2563EB">TND</text>
+  <text x="600" y="300" font-family="Arial" font-size="24" fill="#2563EB">USDT</text>
+  
+  <!-- Arrows -->
+  <path d="M200 310 L300 310" stroke="#2563EB" stroke-width="4" stroke-linecap="round" marker-end="url(#arrowhead)"/>
+  <path d="M500 290 L600 290" stroke="#2563EB" stroke-width="4" stroke-linecap="round" marker-end="url(#arrowhead)"/>
+  
+  <!-- Arrow Marker -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#2563EB"/>
+    </marker>
+  </defs>
+</svg> 
