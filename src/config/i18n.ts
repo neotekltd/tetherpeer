@@ -1,16 +1,16 @@
-export type Language = 'fr' | 'ar-TN';
-
 export const languages = {
+  'en': 'English',
   'fr': 'Français',
-  'ar-TN': 'تونسي'
-};
-
-export type Currency = 'TND' | 'USD';
+  'ar-TN': 'تونسي',
+} as const;
 
 export const currencies = {
-  'TND': 'Dinar Tunisien',
-  'USD': 'Dollar US'
-};
+  'TND': 'Tunisian Dinar',
+  'USD': 'US Dollar',
+} as const;
+
+export type Language = keyof typeof languages;
+export type Currency = keyof typeof currencies;
 
 export const translations = {
   'fr': {

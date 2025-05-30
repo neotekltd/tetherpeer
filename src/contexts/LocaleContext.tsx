@@ -1,62 +1,74 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Language, Currency, translations, languages, currencies } from '@/config/i18n';
+'use client';
+
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { languages, currencies } from '@/config/i18n';
+import translations from '@/config/translations';
 
 type LocaleContextType = {
-  language: Language;
-  setLanguage: (lang: Language) => void;
-  currency: Currency;
-  setCurrency: (curr: Currency) => void;
+  language: string;
+  setLanguage: (lang: string) => void;
+  currency: string;
+  setCurrency: (curr: string) => void;
   t: (key: string) => string;
-  formatCurrency: (amount: number) => string;
 };
 
-const LocaleContext = createContext<LocaleContextType | undefined>(undefined);
+const LocaleContext = createContext<LocaleContextType>({
+  language: 'en',
+  setLanguage: () => {},
+  currency: 'TND',
+  setCurrency: () => {},
+  t: (key: string) => key,
+});
 
-export function LocaleProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguage] = useState<Language>('fr');
-  const [currency, setCurrency] = useState<Currency>('TND');
+export function LocaleProvider({ children }: { children: React.ReactNode }) {
+  const [language, setLanguage] = useState('en');
+  const [currency, setCurrency] = useState('TND');
 
   useEffect(() => {
-    // Set HTML dir attribute for RTL support
-    document.documentElement.dir = language === 'ar-TN' ? 'rtl' : 'ltr';
-    // Set lang attribute
-    document.documentElement.lang = language;
-  }, [language]);
+    const savedLang = localStorage.getItem('language');
+    const savedCurr = localStorage.getItem('currency');
+    if (savedLang && languages[savedLang]) setLanguage(savedLang);
+    if (savedCurr && currencies[savedCurr]) setCurrency(savedCurr);
+  }, []);
 
-  const t = (key: string) => {
-    const keys = key.split('.');
-    let value: any = translations[language];
-    
-    for (const k of keys) {
-      if (value && typeof value === 'object') {
-        value = value[k];
-      } else {
-        return key; // Return key if translation not found
-      }
-    }
-    
-    return value || key;
+  const handleSetLanguage = (lang: string) => {
+    setLanguage(lang);
+    localStorage.setItem('language', lang);
   };
 
-  const formatCurrency = (amount: number) => {
-    const formatter = new Intl.NumberFormat(language, {
-      style: 'currency',
-      currency: currency,
-    });
-    return formatter.format(amount);
+  const handleSetCurrency = (curr: string) => {
+    setCurrency(curr);
+    localStorage.setItem('currency', curr);
+  };
+
+  const t = (key: string): string => {
+    const keys = key.split('.');
+    let value = translations[language];
+    for (const k of keys) {
+      if (value && typeof value === 'object' && k in value) {
+        value = value[k];
+      } else {
+        return key;
+      }
+    }
+    return typeof value === 'string' ? value : key;
   };
 
   return (
-    <LocaleContext.Provider value={{ language, setLanguage, currency, setCurrency, t, formatCurrency }}>
+    <LocaleContext.Provider
+      value={{
+        language,
+        setLanguage: handleSetLanguage,
+        currency,
+        setCurrency: handleSetCurrency,
+        t,
+      }}
+    >
       {children}
     </LocaleContext.Provider>
   );
 }
 
 export function useLocale() {
-  const context = useContext(LocaleContext);
-  if (context === undefined) {
-    throw new Error('useLocale must be used within a LocaleProvider');
-  }
-  return context;
+  return useContext(LocaleContext);
 } 

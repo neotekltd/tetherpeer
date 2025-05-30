@@ -1,3 +1,5 @@
+'use client';
+
 import { Button, Menu, MenuItem, Stack } from '@mui/material';
 import { useState } from 'react';
 import { useLocale } from '@/contexts/LocaleContext';
@@ -6,7 +8,7 @@ import LanguageIcon from '@mui/icons-material/Language';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 
 export default function LocaleSelector() {
-  const { language, setLanguage, currency, setCurrency } = useLocale();
+  const { language, currency, setLanguage, setCurrency } = useLocale();
   const [langAnchor, setLangAnchor] = useState<null | HTMLElement>(null);
   const [currAnchor, setCurrAnchor] = useState<null | HTMLElement>(null);
 
@@ -27,12 +29,12 @@ export default function LocaleSelector() {
   };
 
   const handleLangSelect = (lang: string) => {
-    setLanguage(lang as any);
+    setLanguage(lang);
     handleLangClose();
   };
 
   const handleCurrSelect = (curr: string) => {
-    setCurrency(curr as any);
+    setCurrency(curr);
     handleCurrClose();
   };
 
