@@ -146,7 +146,7 @@ export default function BuyUSDT() {
                   <div className="space-y-2">
                     <div>
                       <Typography variant="h6" color="primary">
-                        {formatCurrency(offer.price)}/USDT
+                        {formatCurrency(offer.price, 'TND')}/USDT
                       </Typography>
                     </div>
                     <div className="flex items-center gap-2">
@@ -173,7 +173,7 @@ export default function BuyUSDT() {
                         {t('common.available')}
                       </Typography>
                       <Typography variant="h6">
-                        {formatCurrency(offer.available)}
+                        {formatCurrency(offer.available, 'USDT')}
                       </Typography>
                     </div>
                     <div className="mb-4">
@@ -181,7 +181,7 @@ export default function BuyUSDT() {
                         {t('common.limits')}
                       </Typography>
                       <Typography variant="body2">
-                        {formatCurrency(offer.minAmount)} - {formatCurrency(offer.maxAmount)}
+                        {formatCurrency(offer.minAmount, 'USDT')} - {formatCurrency(offer.maxAmount, 'USDT')}
                       </Typography>
                     </div>
                     <Link href={`/trade/${offer.id}`}>

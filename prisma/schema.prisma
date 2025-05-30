@@ -43,10 +43,16 @@ enum Network {
   POLYGON
 }
 
+enum OfferStatus {
+  OPEN
+  CLOSED
+  CANCELLED
+}
+
 model User {
-  id            String    @id @default(uuid())
+  id            String    @id @default(cuid())
   email         String    @unique
-  phone         String?   @unique
+  phone         String    @unique
   rating        Float     @default(3.0)
   status        UserStatus @default(ACTIVE)
   tradeLimit    Float     @default(500) // Daily trade limit in TND
@@ -60,30 +66,47 @@ model User {
   ratings       Rating[]  @relation("UserRatings")
   givenRatings  Rating[]  @relation("RaterRatings")
   disputes      Dispute[] @relation("UserDisputes")
+  offers        Offer[]
+  code          String?
+  isVerified    Boolean   @default(false)
   
   @@index([email])
   @@index([phone])
 }
 
+model Offer {
+  id            String        @id @default(cuid())
+  userId        String
+  amount        Float
+  price         Float
+  paymentMethod PaymentMethod
+  network       Network
+  status        OfferStatus   @default(OPEN)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  user          User          @relation(fields: [userId], references: [id])
+  trades        Trade[]
+}
+
 model Trade {
-  id              String      @id @default(uuid())
-  escrowAddress   String      // 2-of-3 multisig P2SH address
-  network         Network     // USDT network (TRC20/ERC20/Polygon)
-  amount          Float       // USDT amount
-  priceInTND      Float      // Price per USDT in TND
-  totalTND        Float      // Total amount in TND
-  seller          User        @relation("SellerTrades", fields: [sellerId], references: [id])
-  sellerId        String
-  buyer           User?       @relation("BuyerTrades", fields: [buyerId], references: [id])
-  buyerId         String?
-  status          TradeStatus @default(CREATED)
-  paymentMethod   PaymentMethod
-  paymentProof    String?     // Encrypted payment proof hash
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
-  expiresAt       DateTime    // Auto-refund timeout
-  dispute         Dispute?
-  rating          Rating?
+  id            String      @id @default(cuid())
+  offerId       String
+  buyerId       String
+  amount        Float
+  price         Float
+  status        TradeStatus @default(PENDING)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  offer         Offer       @relation(fields: [offerId], references: [id])
+  buyer         User        @relation(fields: [buyerId], references: [id])
+  escrowAddress String?
+  txHash        String?
+  seller        User        @relation("SellerTrades", fields: [sellerId], references: [id])
+  sellerId      String
+  paymentProof  String?     // Encrypted payment proof hash
+  expiresAt     DateTime    // Auto-refund timeout
+  dispute       Dispute?
+  rating        Rating?
   
   @@index([sellerId])
   @@index([buyerId])

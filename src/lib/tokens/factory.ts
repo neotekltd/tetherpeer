@@ -1,4 +1,4 @@
-import { Network } from '@prisma/client';
+import { Network } from '@/generated/prisma';
 import { TRC20Handler } from './trc20';
 import { ERC20Handler } from './erc20';
 

@@ -7,7 +7,11 @@ import "./globals.css";
 import { AppBar, Box, Container, CssBaseline, Toolbar, Typography } from '@mui/material';
 import Link from 'next/link';
 import { LocaleProvider } from '@/contexts/LocaleContext';
-import LocaleSelector from '@/components/LocaleSelector';
+import dynamic from 'next/dynamic';
+
+const LocaleSelector = dynamic(() => import('@/components/LocaleSelector'), {
+  ssr: false
+});
 
 const inter = Inter({
   variable: "--font-sans",

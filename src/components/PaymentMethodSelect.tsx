@@ -12,7 +12,7 @@ import {
   Alert,
 } from '@mui/material';
 import Image from 'next/image';
-import { PaymentMethod } from '@prisma/client';
+import { PaymentMethod } from '@/generated/prisma';
 
 interface PaymentMethodSelectProps {
   onSelect: (method: PaymentMethod, details: { accountNumber: string }) => void;

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { D17PaymentProvider } from '@/lib/payment/d17';
-import { TradeStatus } from '@prisma/client';
+import { TradeStatus } from '@/generated/prisma';
 
 export async function POST(request: Request) {
   try {

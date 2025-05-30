@@ -15,7 +15,7 @@ import {
   CircularProgress,
   Alert
 } from '@mui/material';
-import { TradeStatus, PaymentMethod, Network } from '@prisma/client';
+import { TradeStatus, PaymentMethod, Network } from '@/generated/prisma';
 
 interface TradeDetails {
   id: string;

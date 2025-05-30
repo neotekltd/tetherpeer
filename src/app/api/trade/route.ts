@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { generateMultisigAddress } from '@/lib/crypto';
-import { TradeStatus, Network, PaymentMethod } from '@prisma/client';
+import { TradeStatus, Network, PaymentMethod } from '@/generated/prisma';
 import { z } from 'zod';
 
 // Input validation schema
